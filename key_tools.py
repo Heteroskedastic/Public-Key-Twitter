@@ -47,7 +47,7 @@ def make_key_pair():
     ekeys = dict()
     ekeys['PublicKey'] = make_twitter_public((e['publicKey'].p, e['publicKey'].g,
                                               e['publicKey'].h, e['publicKey'].iNumBits))
-    ekeys['privateKey'] = (e['privateKey'].p, e['privateKey'].g, e['privateKey'].x,
+    ekeys['PrivateKey'] = (e['privateKey'].p, e['privateKey'].g, e['privateKey'].x,
                            e['privateKey'].iNumBits)
     return ekeys
 
