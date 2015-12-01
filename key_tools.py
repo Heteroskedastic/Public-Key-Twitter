@@ -29,17 +29,27 @@ def key_expand(code):
 def get_public_key(consumer_key, consumer_sec, access_tok, access_token_sec, user):
     twitter = Twython(consumer_key, consumer_sec, access_tok, access_token_sec)
     d = twitter.show_user(screen_name=user)['description']
-    g, h, p = d.split('|KEY|')[1].split('|')
-    e = elgamal.PublicKey(p=key_expand(p), g=key_expand(g), h=key_expand(h), iNumBits=256)
+    g, h, p, iNumBits = d.split('|TPK|')[1].split('|')
+    e = elgamal.PublicKey(p=key_expand(p), g=key_expand(g), h=key_expand(h), iNumBits=iNumBits)
     return (e, key_expand(g), key_expand(h), key_expand(p))
+
+
+def make_twitter_public(pkey):
+    # g, h, p as defined h = g^x mod p in ElGamal
+    # TPK is stands for Twitter Public Key
+    return '|TPK|' + '|'.join(key_compress(n) for n in pkey)
 
 
 def make_key_pair():
     # make a private/public key pair
-    elgamal.generate_keys()
-    return elgamal.generate_keys()
+    # TODO add p and t options for generate key
+    e = elgamal.generate_keys()
+    ekeys = dict()
+    ekeys['PublicKey'] = make_twitter_public((e['publicKey'].p, e['publicKey'].g,
+                                              e['publicKey'].h, e['publicKey'].iNumBits))
+    ekeys['privateKey'] = (e['privateKey'].p, e['privateKey'].g, e['privateKey'].x,
+                           e['privateKey'].iNumBits)
+    return ekeys
 
 
-def make_twitter_public(g, h, p):
-    # g, h, p as defined h = g^x mod p in ElGamal
-    return '|KEY|' + '|'.join(key_compress(n) for n in [g, h, p])
+
