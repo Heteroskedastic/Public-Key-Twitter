@@ -29,6 +29,7 @@ h2_key = {'PrivateKey':
                40286097406928106390665231019035371289374310946194041291156901633994826301988,
                26411613147959710735752662179675054173684751574803940945905190516099282103410)}
 
+# This is private, you need to get your own twitter consumer_key, consumer_sec, access_token_sec
 config = configparser.ConfigParser()
 config.read('user_data.ini')
 consumer_key = config['HeteroT1']['consumer_key']
