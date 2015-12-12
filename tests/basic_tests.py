@@ -1,7 +1,7 @@
 from unittest import TestCase
 import configparser
 import random
-from key_tools import key_compress, key_expand, get_public_key
+from key_tools import key_compress, key_expand, get_public_key, make_key_pair
 from twython import Twython
 from messaging import send_status_update
 
@@ -46,8 +46,8 @@ class test_key_tools(TestCase):
         #print (nlen, len(short), float(len(short))/nlen)
         assert n == backagain, (n,short)
 
-    # def test_make_key_pair():
-    #     make_key_pair(iNumBits=256, iConfidence=32)
+    def test_make_key_pair(self):
+        make_key_pair(iNumBits=256, iConfidence=32)
 
 
     def test_get_public_key(self):
