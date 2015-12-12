@@ -1,7 +1,8 @@
 from unittest import TestCase
 import configparser
 import random
-from key_tools import key_compress, key_expand, get_public_key, make_key_pair
+from key_tools import key_compress, key_expand, get_public_key, make_key_pair, assemblePublicKeyElgamal, assemblePrivateKeyElgamal
+from messaging import encrypt_message
 from twython import Twython
 from messaging import send_status_update
 
@@ -16,18 +17,23 @@ h1_key = {'PrivateKey':
               (58504424099595153091358344215955475230050049863512430651997500754387780518083,
                38614024321110971174729173348335841809565219369323123741355000936927396786103,
                43941852118365358120679198651859899509717714722706687951109846250988690628871,
+               256
                )}
 
 h2_key = {'PrivateKey':
               (64920886194952987256412246312819798284641846100168300883020957925738043123223,
                40286097406928106390665231019035371289374310946194041291156901633994826301988,
-               12451816743310384350839455290582814769468821404604129753069361124628871636399),
+               12451816743310384350839455290582814769468821404604129753069361124628871636399,
+               256),
           'PublicKeyTwitter':
               '|TPK|ËԈӦŏԨՌƍȲƃǍңҎƩϨҾðĵƹӣUԭԍъrĈŬ|oƫíȬԐöȜЁŴTjȉƮȌǊԢŏpưĩӵϠՓҪƺՍ|aȱόĠԯЮчјϾŀЋÁĺДїΥғԜԡӹŋʛïƧóȰ|ƍ',
           'PublicKey':
               (64920886194952987256412246312819798284641846100168300883020957925738043123223,
                40286097406928106390665231019035371289374310946194041291156901633994826301988,
-               26411613147959710735752662179675054173684751574803940945905190516099282103410)}
+               26411613147959710735752662179675054173684751574803940945905190516099282103410,
+               256
+               )}
+
 
 # This is private, you need to get your own twitter consumer_key, consumer_sec, access_token_sec
 config = configparser.ConfigParser()
@@ -56,10 +62,26 @@ class test_key_tools(TestCase):
         twitter = Twython(consumer_key, consumer_sec, access_tok, access_token_sec)
         h1 = get_public_key(twitter, 'heterot1')
         h2 = get_public_key(twitter, 'heterot2')
-        #print(h1[1:], h2[1:])
-        assert(h1[1:] == h1_key['PublicKey'])
-        assert(h2[1:] == h2_key['PublicKey'])
+        #print(h1, h2)
+        assert(h1 == h1_key['PublicKeyTwitter'])
+        assert(h2 == h2_key['PublicKeyTwitter'])
 
+class test_messaging(TestCase):
+    # test
+
+    def test_encrypt_message(self):
+        plaintext = 'Hellow Twitter would in 140 characters. There is a lot to say and little room.\
+        But hard to fill is you have nothing to say. So what to say'
+        h1_elgamal_Publickey = assemblePublicKeyElgamal(h1_key['PublicKeyTwitter'])[0]
+        encrypted = encrypt_message(plaintext, publicKey=h1_elgamal_Publickey)
+        print(encrypted, len(encrypted))
+
+#
+# def encrypt_message(plaintext, reciever, publicKey=None):
+#     # encrypt the message
+#
+#     if publicKey != None:
+#         return elgamal.encrypt(publicKey, plaintext)
 # send_status_update(consumer_key, consumer_sec, access_tok, access_token_sec)
 # print(k)
 

@@ -1,13 +1,15 @@
 import elgamal
+from key_tools import key_compress
 from twython import Twython, TwythonError
 from datetime import datetime as d
 
-def encrypt_message(plaintext, reciever, publicKey=None):
+def encrypt_message(plaintext, publicKey):
     # encrypt the message
-    if publicKey != None:
-        return elgamal.encrypt(publicKey, plaintext)
-    else:
-        return elgamal.encrypt(get_receiver_key(user_id), plaintext)
+    #privateKey is a elgamal object
+    #return elgamal.encrypt(publicKey, plaintext)
+    cypher_int = elgamal.encrypt(publicKey, plaintext)
+    cypher_text =  '|'.join(key_compress(int(n)) for n in cypher_int.strip(' ').split(' '))
+    return cypher_text
 
 def decrypt_message(cyphertext, privateKey):
     # try to decrypt message

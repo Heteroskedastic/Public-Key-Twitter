@@ -45,13 +45,25 @@ def key_expand(code):
     (alpha, size, decode) = alphabet()
     return int(reduce(lambda n, d: n*size + decode[d], code, 0))
 
+def assemblePublicKeyElgamal(tpk):
+    g, h, p, iNumBits = tpk.split('|TPK|')[1].split('|')
+    e = elgamal.PublicKey
+    e.g = key_expand(g)
+    e.p = key_expand(p)
+    e.h = key_expand(h)
+    e.iNumBits = key_expand(iNumBits)
+    return e, key_expand(g), key_expand(h), key_expand(p), key_expand(iNumBits)
+
+def assemblePrivateKeyElgamal(ints):
+    # ints is a tuple if (p, g, x, iNumBits)
+    PrivateKey = {'p': ints[0], 'g': ints[1], 'x': ints[2], 'iNumBits': ints[3]}
+    return PrivateKey
+
 
 def get_public_key(twitter, user):
     d = twitter.show_user(screen_name=user)['description']
-    g, h, p, iNumBits = d.split('|TPK|')[1].split('|')
-    e = elgamal.PublicKey(p=key_expand(p), g=key_expand(g), h=key_expand(h), iNumBits=key_expand(iNumBits))
-    return e, key_expand(g), key_expand(h), key_expand(p)
-
+    assert '|TPK|' in d, "Did not find a Twitter public key |tpk|"
+    return d
 
 def make_twitter_public(pkey):
     # g, h, p as defined h = g^x mod p in ElGamal
