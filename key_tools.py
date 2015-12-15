@@ -22,42 +22,19 @@ def key_compress(integer):
     return key_compress(a) + alpha[b]
 
 
-def message_compress(cyphertext):
-    (alpha, size, decode) = alphabet()
-    t = ''
-    for i in cyphertext.strip(' ').split(' '):
-        #print('int is ' + i)
-        a, b = divmod(int(i), size)
-        #print('b is -'+str(b))
-        #print('a is -'+str(a))
-        if a == 0:
-            t = t + alpha[b]
-            t = t+'|'
-            #print('t is-'+t, len(t))
-        else:
-            t = t + key_compress(a) + alpha[b]
-            t = t+'|'
-            #print('t is-'+t, len(t))
-    return t
-
-
 def key_expand(code):
     (alpha, size, decode) = alphabet()
     return int(reduce(lambda n, d: n*size + decode[d], code, 0))
 
 def assemblePublicKeyElgamal(tpk):
-    g, h, p, iNumBits = tpk.split('|TPK|')[1].split('|')
-    e = elgamal.PublicKey
-    e.g = key_expand(g)
-    e.p = key_expand(p)
-    e.h = key_expand(h)
-    e.iNumBits = key_expand(iNumBits)
-    return e, key_expand(g), key_expand(h), key_expand(p), key_expand(iNumBits)
+    # PublicKey(p, g, h, iNumBits)
+    p, g, h, iNumBits = tpk.split('|TPK|')[1].split('|')
+    e = elgamal.PublicKey(key_expand(p), key_expand(g), key_expand(h), key_expand(iNumBits))
+    return e
 
 def assemblePrivateKeyElgamal(ints):
     # ints is a tuple if (p, g, x, iNumBits)
-    PrivateKey = {'p': ints[0], 'g': ints[1], 'x': ints[2], 'iNumBits': ints[3]}
-    return PrivateKey
+    return elgamal.PrivateKey(ints[0], ints[1], ints[2], ints[3])
 
 
 def get_public_key(twitter, user):
@@ -66,9 +43,10 @@ def get_public_key(twitter, user):
     return d
 
 def make_twitter_public(pkey):
-    # g, h, p as defined h = g^x mod p in ElGamal
+    # publicKey = PublicKey(p, g, h, iNumBits)
+    # p, g, h as defined h = g^x mod p in ElGamal
     # TPK is stands for Twitter Public Key
-    return '|TPK|' + '|'.join(key_compress(n) for n in pkey)
+    return '|TPK|' + '|'.join(key_compress(n) for n in (pkey.p, pkey.g, pkey.h, pkey.iNumBits))
 
 
 def make_key_pair(iNumBits=256, iConfidence=32):
@@ -76,8 +54,7 @@ def make_key_pair(iNumBits=256, iConfidence=32):
     # TODO add p and t options for generate key
     e = elgamal.generate_keys()
     ekeys = dict()
-    ekeys['PublicKey'] = make_twitter_public((e['publicKey'].p, e['publicKey'].g,
-                                              e['publicKey'].h, e['publicKey'].iNumBits))
+    ekeys['PublicKey'] = make_twitter_public(e['publicKey'])
     ekeys['PrivateKey'] = (e['privateKey'].p, e['privateKey'].g, e['privateKey'].x,
                            e['privateKey'].iNumBits)
     return ekeys

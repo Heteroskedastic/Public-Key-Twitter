@@ -1,5 +1,5 @@
 import elgamal
-from key_tools import key_compress
+from key_tools import key_compress, key_expand
 from twython import Twython, TwythonError
 from datetime import datetime as d
 
@@ -8,12 +8,13 @@ def encrypt_message(plaintext, publicKey):
     #privateKey is a elgamal object
     #return elgamal.encrypt(publicKey, plaintext)
     cypher_int = elgamal.encrypt(publicKey, plaintext)
-    cypher_text =  '|'.join(key_compress(int(n)) for n in cypher_int.strip(' ').split(' '))
-    return cypher_text
+    cypher_compressed =  '|'.join(key_compress(int(n)) for n in cypher_int.strip(' ').split(' '))
+    return cypher_compressed
 
-def decrypt_message(cyphertext, privateKey):
+def decrypt_message(privateKey, cypher_compressed):
     # try to decrypt message
-    return elgamal.decrypt(privateKey, cyphertext)
+    cypher_int = ' '.join(str(key_expand(c)) for c in cypher_compressed.split('|')) + ' '
+    return elgamal.decrypt(privateKey, cypher_int)
 
 
 def get_user_messages(consumer_key, consumer_sec, access_tok, access_token_sec, username='heteroT1'):
