@@ -4,11 +4,10 @@ import elgamal
 from twython import Twython
 
 
-
 def alphabet():
     u = ''.join(chr(i) for i in range(65536) if (ud.category(chr(i)) in ('Lu', 'Ll')))[:1000]
     # ('Lu', 'Ll', 'Lt', 'Lm', 'Lo' )
-    #u = ''.join(chr(i) for i in range(65536) if (ud.category(chr(i)) in ('Lu', 'Ll', 'Lt', 'Lm', 'Lo')))
+    # u = ''.join(chr(i) for i in range(65536) if (ud.category(chr(i)) in ('Lu', 'Ll', 'Lt', 'Lm', 'Lo')))
     alphabet_size = len(u)
     decoderdict = dict((b, a) for a, b in enumerate(u))
     return u, alphabet_size, decoderdict
@@ -26,11 +25,13 @@ def key_expand(code):
     (alpha, size, decode) = alphabet()
     return int(reduce(lambda n, d: n*size + decode[d], code, 0))
 
+
 def assemblePublicKeyElgamal(tpk):
     # PublicKey(p, g, h, iNumBits)
     p, g, h, iNumBits = tpk.split('|TPK|')[1].split('|')
     e = elgamal.PublicKey(key_expand(p), key_expand(g), key_expand(h), key_expand(iNumBits))
     return e
+
 
 def assemblePrivateKeyElgamal(ints):
     # ints is a tuple if (p, g, x, iNumBits)
@@ -41,6 +42,7 @@ def get_public_key(twitter, user):
     d = twitter.show_user(screen_name=user)['description']
     assert '|TPK|' in d, "Did not find a Twitter public key |tpk|"
     return d
+
 
 def make_twitter_public(pkey):
     # publicKey = PublicKey(p, g, h, iNumBits)
