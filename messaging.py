@@ -36,9 +36,8 @@ def send_direct_messages(consumer_key, consumer_sec, access_tok, access_token_se
     print("message - ", message)
 
 
-def send_status_update(consumer_key, consumer_sec, access_tok, access_token_sec,
-                       message="test " + str(d.now())):
-    twitter = Twython(consumer_key, consumer_sec, access_tok, access_token_sec)
+def send_status_update(twitter, message="test " + str(d.now())):
+    # witter = Twython(consumer_key, consumer_sec, access_tok, access_token_sec)
     twitter.update_status(status=message)
     print("message sent ")
     print("message - ", message)

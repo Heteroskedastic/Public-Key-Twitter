@@ -7,6 +7,7 @@ from key_tools import key_compress, key_expand, get_public_key, make_key_pair, a
 from messaging import encrypt_message, decrypt_message
 from twython import Twython
 from messaging import send_status_update
+from datetime import datetime as d
 
 h1_key = {'PrivateKey': (58504424099595153091358344215955475230050049863512430651997500754387780518083,
                          38614024321110971174729173348335841809565219369323123741355000936927396786103,
@@ -72,26 +73,65 @@ class test_KeyTools(TestCase):
         assert twitkeyback.iNumBits == orgkey.iNumBits
 
 
-class test_messaging(TestCase):
+class test_messageEncryption(TestCase):
 
     def test_simple_encrypt_decrypt(self):
-        plaintext = 'Hello Twitter would in 140 characters.'
+        """
+        does not use message and key compression
+        """
+        plaintext = 'Hello Twitter world in 140 characters.'
         h1_Pub = assemblePublicKeyElgamal(h1_key['PublicKeyTwitter'])
-        encrypted = elgamalold.encrypt(h1_Pub, plaintext)
+        encrypted = elgamal.encrypt(h1_Pub, plaintext)
         # print(encrypted)
         h1_priv = assemblePrivateKeyElgamal(h1_key['PrivateKey'])
-        plaintext = elgamalold.decrypt(h1_priv, encrypted)
+        plaintext = elgamal.decrypt(h1_priv, encrypted)
         print(plaintext)
 
     def test_encrypt_decrypt_message(self):
-        plaintext = 'Hello Twitter would in 140 characters.'
+        """
+        uses message and key compression
+        """
+        plaintext = 'Hello Twitter world in 140 characters.'
         h1_Publickey = assemblePublicKeyElgamal(h1_key['PublicKeyTwitter'])
-        encrypted = encrypt_message(plaintext, publicKey=h1_Publickey)
+        encrypted = encrypt_message(plaintext, h1_Publickey)
         # print(encrypted)
         h1_Privatekey = assemblePrivateKeyElgamal(h1_key['PrivateKey'])
         decrypted = decrypt_message(h1_Privatekey, encrypted,)
         # print(decrypted)
         assert plaintext == decrypted
+
+
+class test_messaging(TestCase):
+
+    def test_send_plain_statusupdate(self):
+        message = 'test_send_statusupdate. Time:  ' + str(d.now())
+        twitter = Twython(consumer_key, consumer_sec, access_tok, access_token_sec)
+        send_status_update(twitter, message)
+
+    def test_read_plain_status(self):
+        twitter = Twython(consumer_key, consumer_sec, access_tok, access_token_sec)
+        user_timeline = twitter.get_user_timeline(screen_name='HeteroT1', count=1, exclude_replies=True)
+        lastmessage = user_timeline[0]['text']
+        assert lastmessage.split(':')[0] == 'test_send_statusupdate. Time'
+
+    def test_send_encrypted_statusupdate(self):
+        plaintext = 'Hello Twitter world'
+        # keys
+        h1_Publickey = assemblePublicKeyElgamal(h1_key['PublicKeyTwitter'])
+        h1_Privatekey = assemblePrivateKeyElgamal(h1_key['PrivateKey'])
+        encrypted = encrypt_message(plaintext, h1_Publickey)
+        # Send
+        twitter = Twython(consumer_key, consumer_sec, access_tok, access_token_sec)
+        print(encrypted)
+        send_status_update(twitter, encrypted)
+        # read
+        user_timeline = twitter.get_user_timeline(screen_name='HeteroT1', count=1, exclude_replies=True)
+        lastmessage = user_timeline[0]['text']
+        decrypted = decrypt_message(h1_Privatekey, lastmessage,)
+        print(decrypted)
+        assert plaintext == decrypted
+
+
 
 
 class test_elgamal(TestCase):
