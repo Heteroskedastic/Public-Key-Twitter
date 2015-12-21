@@ -2,7 +2,7 @@ from unittest import TestCase
 import string
 import configparser
 import random
-import elgamal
+from elgamal import PublicKey, encrypt, decrypt, generate_keys
 from key_tools import key_compress, key_expand, get_public_key, make_key_pair, assemblePublicKeyElgamal, assemblePrivateKeyElgamal, make_twitter_public
 from messaging import encrypt_message, decrypt_message
 from twython import Twython
@@ -62,7 +62,7 @@ class test_KeyTools(TestCase):
         assert(h2 == h2_key['PublicKeyTwitter'])
 
     def test_publickey_compress_expand(self):
-        orgkey = elgamal.PublicKey(h1_key['PublicKey'][0], h1_key['PublicKey'][1], h1_key['PublicKey'][2], h1_key['PublicKey'][3])
+        orgkey = PublicKey(h1_key['PublicKey'][0], h1_key['PublicKey'][1], h1_key['PublicKey'][2], h1_key['PublicKey'][3])
         twitkey = make_twitter_public(orgkey)
         k = '|TPK|ÅʎȾïκĦçǼǭŤԫɱųyxӏʗɄϲՖʊњșѴʝß|mύYǖûԼĻсĺǱǤҹҙΛŨȇǘĈэǹAԘԏȢѺó|rԝӄăȃǼąЏœϲӋӳʓевкЪЗԧúҾƇՍКϛӗ|ƍ'
         twitkeyback = assemblePublicKeyElgamal(twitkey)
@@ -81,10 +81,10 @@ class test_messageEncryption(TestCase):
         """
         plaintext = 'Hello Twitter world in 140 characters.'
         h1_Pub = assemblePublicKeyElgamal(h1_key['PublicKeyTwitter'])
-        encrypted = elgamal.encrypt(h1_Pub, plaintext)
+        encrypted = encrypt(h1_Pub, plaintext)
         # print(encrypted)
         h1_priv = assemblePrivateKeyElgamal(h1_key['PrivateKey'])
-        plaintext = elgamal.decrypt(h1_priv, encrypted)
+        plaintext = decrypt(h1_priv, encrypted)
         print(plaintext)
 
     def test_encrypt_decrypt_message(self):
@@ -140,27 +140,27 @@ class test_elgamal(TestCase):
         return ''.join(random.choice(chars) for _ in range(size))
 
     def test_roundtrip_plain(self):
-        keys = elgamal.generate_keys()
+        keys = generate_keys()
         priv = keys['privateKey']
         pub = keys['publicKey']
         c = 0
         while c < 1000:
             # message = "My name is Ryan.  Here is some french text:  Maître Corbeau, sur un arbre perché.  Now some Chinese: 鋈 晛桼桾 枲柊氠 藶藽 歾炂盵 犈犆犅 壾, 軹軦軵 寁崏庲 摮 蟼襛 蝩覤 蜭蜸覟 駽髾髽 忷扴汥 "
             message = self.id_generator(500)
-            cipher = elgamal.encrypt(pub, message)
-            plain = elgamal.decrypt(priv, cipher)
+            cipher = encrypt(pub, message)
+            plain = decrypt(priv, cipher)
             assert message == plain
             c += 1
 
     def test_roundtrip_stored_key(self):
-        Pub = elgamal.PublicKey(h1_key['PublicKey'][0], h1_key['PublicKey'][1], h1_key['PublicKey'][2], h1_key['PublicKey'][3])
+        Pub = PublicKey(h1_key['PublicKey'][0], h1_key['PublicKey'][1], h1_key['PublicKey'][2], h1_key['PublicKey'][3])
         h1_Privatekey = assemblePrivateKeyElgamal(h1_key['PrivateKey'])
         c = 0
         while c < 100:
             # message = "My name is Ryan.  Here is some french text:  Maître Corbeau, sur un arbre perché.  Now some Chinese: 鋈 晛桼桾 枲柊氠 藶藽 歾炂盵 犈犆犅 壾, 軹軦軵 寁崏庲 摮 蟼襛 蝩覤 蜭蜸覟 駽髾髽 忷扴汥 "
             message = self.id_generator(500)
-            cipher = elgamal.encrypt(Pub, message)
-            plain = elgamal.decrypt(h1_Privatekey, cipher)
+            cipher = encrypt(Pub, message)
+            plain = decrypt(h1_Privatekey, cipher)
             assert message == plain
             c += 1
 
@@ -171,7 +171,7 @@ class test_elgamal(TestCase):
         while c < 100:
             # message = "My name is Ryan.  Here is some french text:  Maître Corbeau, sur un arbre perché.  Now some Chinese: 鋈 晛桼桾 枲柊氠 藶藽 歾炂盵 犈犆犅 壾, 軹軦軵 寁崏庲 摮 蟼襛 蝩覤 蜭蜸覟 駽髾髽 忷扴汥 "
             message = self.id_generator(500)
-            cipher = elgamal.encrypt(h1_Publickey, message)
-            plain = elgamal.decrypt(h1_Privatekey, cipher)
+            cipher = encrypt(h1_Publickey, message)
+            plain = decrypt(h1_Privatekey, cipher)
             assert message == plain
             c += 1
