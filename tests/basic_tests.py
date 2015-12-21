@@ -1,13 +1,15 @@
-from unittest import TestCase
-import string
 import configparser
 import random
-from elgamal import PublicKey, encrypt, decrypt, generate_keys
-from key_tools import key_compress, key_expand, get_public_key, make_key_pair, assemblePublicKeyElgamal, assemblePrivateKeyElgamal, make_twitter_public
-from messaging import encrypt_message, decrypt_message
-from twython import Twython
-from messaging import send_status_update
+import string
 from datetime import datetime as d
+from unittest import TestCase
+
+from twython import Twython
+
+from elgamal import PublicKey, encrypt, decrypt, generate_keys
+from key_tools import key_compress, key_expand, get_public_key, assemblePublicKeyElgamal, assemblePrivateKeyElgamal, make_twitter_public
+from messaging import encrypt_message, decrypt_message
+from messaging import send_status_update
 
 h1_key = {'PrivateKey': (58504424099595153091358344215955475230050049863512430651997500754387780518083,
                          38614024321110971174729173348335841809565219369323123741355000936927396786103,
@@ -46,7 +48,7 @@ class test_KeyTools(TestCase):
         n = random.getrandbits(300)
         short = key_compress(n)
         backagain = key_expand(short)
-        nlen = len(str(n))
+        # nlen = len(str(n))
         # print (nlen, len(short), float(len(short))/nlen)
         assert n == backagain, (n, short)
 

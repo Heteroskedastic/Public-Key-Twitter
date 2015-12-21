@@ -1,6 +1,6 @@
 from functools import reduce
 import unicodedata as ud
-import elgamal
+from elgamal import PrivateKey, generate_keys, PublicKey
 from twython import Twython
 
 
@@ -29,13 +29,13 @@ def key_expand(code):
 def assemblePublicKeyElgamal(tpk):
     # PublicKey(p, g, h, iNumBits)
     p, g, h, iNumBits = tpk.split('|TPK|')[1].split('|')
-    e = elgamal.PublicKey(key_expand(p), key_expand(g), key_expand(h), key_expand(iNumBits))
+    e = PublicKey(key_expand(p), key_expand(g), key_expand(h), key_expand(iNumBits))
     return e
 
 
 def assemblePrivateKeyElgamal(ints):
     # ints is a tuple if (p, g, x, iNumBits)
-    return elgamal.PrivateKey(ints[0], ints[1], ints[2], ints[3])
+    return PrivateKey(ints[0], ints[1], ints[2], ints[3])
 
 
 def get_public_key(twitter, user):
@@ -54,7 +54,7 @@ def make_twitter_public(pkey):
 def make_key_pair(iNumBits=256, iConfidence=32):
     # make a private/public key pair
     # TODO add p and t options for generate key
-    e = elgamal.generate_keys()
+    e = generate_keys()
     ekeys = dict()
     ekeys['PublicKey'] = make_twitter_public(e['publicKey'])
     ekeys['PrivateKey'] = (e['privateKey'].p, e['privateKey'].g, e['privateKey'].x,
