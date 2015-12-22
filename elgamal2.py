@@ -106,6 +106,12 @@ def gcd(a, b):
     return a
 
 
+# # computes the jacobi symbol of a, n
+# def gcd(a, b):
+#     while b: a, b = b, a % b
+#     return a
+
+
 # computes base^exp mod modulus
 def modexp(base, exp, modulus):
     return pow(base, exp, modulus)
@@ -130,15 +136,10 @@ def SS(num, iConfidence):
     return True
 
 
-# computes the jacobi symbol of a, n
-def gcd(a,b):
-    while b: a,b = b,a%b
-    return a
-
 def jacobi(n, m):
     gcdnm = gcd(n, m)
     if gcdnm != 1:
-        #return jacobi(n/gcdnm,m/gcdnm)
+        # return jacobi(n/gcdnm,m/gcdnm)
         return 0
     if n == 1:
         return 1
@@ -149,8 +150,9 @@ def jacobi(n, m):
             return jacobi(n >> 1, m)
     if n > m:
         return jacobi(n % m, m)
-    if n % 4 == 3 and m%4 == 3:
-        return (-1)*jacobi(m, n)
+    # noinspection PyPep8
+    if n % 4 == 3 and m % 4 == 3:
+        return (-1) * jacobi(m, n)
     else:
         return jacobi(m, n)
 
@@ -201,7 +203,7 @@ def find_prime(iNumBits, iConfidence):
 # encodes bytes to integers mod p.  reads bytes from file
 def encode(sPlaintext, iNumBits):
     byte_array = bytearray(sPlaintext, 'utf-16')
-    #byte_array = bytearray(sPlaintext, 'ascii')
+    # byte_array = bytearray(sPlaintext, 'ascii')
 
     # z is the array of integers mod p
     z = []
@@ -276,8 +278,8 @@ def decode(aiPlaintext, iNumBits):
     # m[1] = 7696128 % 65536 / (2^(8*1)) = 111 = 'o'
     # 7696128 - (111 * (2^(8*1))) = 7667712
     # m[2] = 7667712 / (2^(8*2)) = 117 = 'u'
-    #print(bytes_array)
-    #print(bytearray(b for b in bytes_array))
+    # print(bytes_array)
+    # print(bytearray(b for b in bytes_array))
     decodedText = bytearray(b for b in bytes_array).decode('utf-16')
     # decodedText = bytearray(b for b in bytes_array).decode('ascii')
 
@@ -292,7 +294,7 @@ def generate_keys(iNumBits=256, iConfidence=32):
     # h = g ^ x mod p
     p = find_prime(iNumBits, iConfidence)
     g = find_primitive_root(p)
-    x = random.randint(1, p-1)
+    x = random.randint(1, p - 1)
     h = modexp(g, x, p)
 
     publicKey = PublicKey(p, g, h, iNumBits)
@@ -346,7 +348,7 @@ def decrypt(key, cipher):
         plain = (d * modexp(s, key.p - 2, key.p)) % key.p
         # add plain to list of plaintext integers
         plaintext.append(plain)
-    #print(plaintext)
+    # print(plaintext)
     decryptedText = decode(plaintext, key.iNumBits)
 
     # remove trailing null bytes
