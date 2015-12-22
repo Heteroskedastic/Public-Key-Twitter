@@ -98,7 +98,7 @@ class PublicKey(object):
         self.iNumBits = iNumBits
 
 
-computes the greatest common denominator of a and b.  assumes a > b
+# computes the greatest common denominator of a and b.  assumes a > b
 
 def gcd(a, b):
     if b != 0:
