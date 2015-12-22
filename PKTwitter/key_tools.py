@@ -1,7 +1,7 @@
-from functools import reduce
 import unicodedata as ud
-from elgamal2 import PrivateKey, generate_keys, PublicKey
-from twython import Twython
+from functools import reduce
+
+from PKTwitter.elgamal2 import PrivateKey, generate_keys, PublicKey
 
 
 def alphabet():

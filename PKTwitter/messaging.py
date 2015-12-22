@@ -1,7 +1,9 @@
-from elgamal2 import encrypt, decrypt
-from key_tools import key_compress, key_expand
-from twython import Twython, TwythonError
 from datetime import datetime as d
+
+from twython import Twython
+
+from PKTwitter.elgamal2 import encrypt, decrypt
+from PKTwitter.key_tools import key_compress, key_expand
 
 
 def encrypt_message(plaintext, publickey):
