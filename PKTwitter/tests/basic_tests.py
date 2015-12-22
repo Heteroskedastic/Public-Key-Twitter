@@ -59,12 +59,13 @@ class test_KeyTools(TestCase):
     #     make_key_pair(iNumBits=256, iConfidence=32)
 
     def test_get_public_key(self):
-        twitter = Twython(consumer_key, consumer_sec, access_tok, access_token_sec)
-        h1 = get_public_key(twitter, 'heterot1')
-        h2 = get_public_key(twitter, 'heterot2')
-        # print(h1, h2)
-        assert(h1 == h1_key['PublicKeyTwitter'])
-        assert(h2 == h2_key['PublicKeyTwitter'])
+        if userkeys:
+            twitter = Twython(consumer_key, consumer_sec, access_tok, access_token_sec)
+            h1 = get_public_key(twitter, 'heterot1')
+            h2 = get_public_key(twitter, 'heterot2')
+            # print(h1, h2)
+            assert(h1 == h1_key['PublicKeyTwitter'])
+            assert(h2 == h2_key['PublicKeyTwitter'])
 
     def test_publickey_compress_expand(self):
         orgkey = PublicKey(h1_key['PublicKey'][0], h1_key['PublicKey'][1], h1_key['PublicKey'][2], h1_key['PublicKey'][3])
@@ -109,32 +110,35 @@ class test_messageEncryption(TestCase):
 class test_messaging(TestCase):
 
     def test_send_plain_statusupdate(self):
-        message = 'test_send_statusupdate. Time:  ' + str(d.now())
-        twitter = Twython(consumer_key, consumer_sec, access_tok, access_token_sec)
-        send_status_update(twitter, message)
+        if userkeys:
+            message = 'test_send_statusupdate. Time:  ' + str(d.now())
+            twitter = Twython(consumer_key, consumer_sec, access_tok, access_token_sec)
+            send_status_update(twitter, message)
 
     def test_read_plain_status(self):
-        twitter = Twython(consumer_key, consumer_sec, access_tok, access_token_sec)
-        user_timeline = twitter.get_user_timeline(screen_name='HeteroT1', count=1, exclude_replies=True)
-        lastmessage = user_timeline[0]['text']
-        assert lastmessage.split(':')[0] == 'test_send_statusupdate. Time'
+        if userkeys:
+            twitter = Twython(consumer_key, consumer_sec, access_tok, access_token_sec)
+            user_timeline = twitter.get_user_timeline(screen_name='HeteroT1', count=1, exclude_replies=True)
+            lastmessage = user_timeline[0]['text']
+            assert lastmessage.split(':')[0] == 'test_send_statusupdate. Time'
 
     def test_send_encrypted_statusupdate(self):
-        plaintext = 'Hello Twitter world'
-        # keys
-        h1_Publickey = assemblePublicKeyElgamal(h1_key['PublicKeyTwitter'])
-        h1_Privatekey = assemblePrivateKeyElgamal(h1_key['PrivateKey'])
-        encrypted = encrypt_message(plaintext, h1_Publickey)
-        # Send
-        twitter = Twython(consumer_key, consumer_sec, access_tok, access_token_sec)
-        print(encrypted)
-        send_status_update(twitter, encrypted)
-        # read
-        user_timeline = twitter.get_user_timeline(screen_name='HeteroT1', count=1, exclude_replies=True)
-        lastmessage = user_timeline[0]['text']
-        decrypted = decrypt_message(h1_Privatekey, lastmessage,)
-        print(decrypted)
-        assert plaintext == decrypted
+        if userkeys:
+            plaintext = 'Hello Twitter world'
+            # keys
+            h1_Publickey = assemblePublicKeyElgamal(h1_key['PublicKeyTwitter'])
+            h1_Privatekey = assemblePrivateKeyElgamal(h1_key['PrivateKey'])
+            encrypted = encrypt_message(plaintext, h1_Publickey)
+            # Send
+            twitter = Twython(consumer_key, consumer_sec, access_tok, access_token_sec)
+            print(encrypted)
+            send_status_update(twitter, encrypted)
+            # read
+            user_timeline = twitter.get_user_timeline(screen_name='HeteroT1', count=1, exclude_replies=True)
+            lastmessage = user_timeline[0]['text']
+            decrypted = decrypt_message(h1_Privatekey, lastmessage,)
+            print(decrypted)
+            assert plaintext == decrypted
 
 
 
