@@ -26,14 +26,14 @@ def key_expand(code):
     return int(reduce(lambda n, d: n*size + decode[d], code, 0))
 
 
-def assemblePublicKeyElgamal(tpk):
+def assemble_publickey(tpk):
     # PublicKey(p, g, h, iNumBits)
     p, g, h, iNumBits = tpk.split('|TPK|')[1].split('|')
     e = PublicKey(key_expand(p), key_expand(g), key_expand(h), key_expand(iNumBits))
     return e
 
 
-def assemblePrivateKeyElgamal(ints):
+def assemble_privatekey(ints):
     # ints is a tuple if (p, g, x, iNumBits)
     return PrivateKey(ints[0], ints[1], ints[2], ints[3])
 

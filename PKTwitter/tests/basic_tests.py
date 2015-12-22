@@ -8,7 +8,7 @@ from PKTwitter.messaging import encrypt_message, decrypt_message, send_status_up
 from twython import Twython
 
 from PKTwitter.elgamal2 import PublicKey, encrypt, decrypt, generate_keys
-from PKTwitter.key_tools import key_compress, key_expand, get_public_key, assemblePublicKeyElgamal, assemblePrivateKeyElgamal, make_twitter_public
+from PKTwitter.key_tools import key_compress, key_expand, get_public_key, assemble_publickey, assemble_privatekey, make_twitter_public
 
 h1_key = {'PrivateKey': (58504424099595153091358344215955475230050049863512430651997500754387780518083,
                          38614024321110971174729173348335841809565219369323123741355000936927396786103,
@@ -29,7 +29,6 @@ h2_key = dict(PrivateKey=(649208861949529872564122463128197982846418461001683008
                          26411613147959710735752662179675054173684751574803940945905190516099282103410,
                          256
                          ))
-
 
 # This is private, you need to get your own twitter consumer_key, consumer_sec, access_token_sec
 try:
@@ -64,14 +63,14 @@ class test_KeyTools(TestCase):
             h1 = get_public_key(twitter, 'heterot1')
             h2 = get_public_key(twitter, 'heterot2')
             # print(h1, h2)
-            assert(h1 == h1_key['PublicKeyTwitter'])
-            assert(h2 == h2_key['PublicKeyTwitter'])
+            assert (h1 == h1_key['PublicKeyTwitter'])
+            assert (h2 == h2_key['PublicKeyTwitter'])
 
     def test_publickey_compress_expand(self):
         orgkey = PublicKey(h1_key['PublicKey'][0], h1_key['PublicKey'][1], h1_key['PublicKey'][2], h1_key['PublicKey'][3])
         twitkey = make_twitter_public(orgkey)
         k = '|TPK|ÅʎȾïκĦçǼǭŤԫɱųyxӏʗɄϲՖʊњșѴʝß|mύYǖûԼĻсĺǱǤҹҙΛŨȇǘĈэǹAԘԏȢѺó|rԝӄăȃǼąЏœϲӋӳʓевкЪЗԧúҾƇՍКϛӗ|ƍ'
-        twitkeyback = assemblePublicKeyElgamal(twitkey)
+        twitkeyback = assemble_publickey(twitkey)
         assert k == twitkey
         assert twitkeyback.p == orgkey.p
         assert twitkeyback.g == orgkey.g
@@ -79,56 +78,54 @@ class test_KeyTools(TestCase):
         assert twitkeyback.iNumBits == orgkey.iNumBits
 
 
-class test_messageEncryption(TestCase):
-
+class test_MessageEncryption(TestCase):
     def test_simple_encrypt_decrypt(self):
         """
         does not use message and key compression
         """
         plaintext = 'Hello Twitter world in 140 characters.'
-        h1_Pub = assemblePublicKeyElgamal(h1_key['PublicKeyTwitter'])
-        encrypted = encrypt(h1_Pub, plaintext)
+        pub = assemble_publickey(h1_key['PublicKeyTwitter'])
+        encrypted = encrypt(pub, plaintext)
         # print(encrypted)
-        h1_priv = assemblePrivateKeyElgamal(h1_key['PrivateKey'])
-        plaintext = decrypt(h1_priv, encrypted)
+        priv = assemble_privatekey(h1_key['PrivateKey'])
+        plaintext = decrypt(priv, encrypted)
         print(plaintext)
 
-    def test_encrypt_decrypt_message(self):
+    def test_EncryptDecryptMessage(self):
         """
         uses message and key compression
         """
         plaintext = 'Hello Twitter world in 140 characters.'
-        h1_Publickey = assemblePublicKeyElgamal(h1_key['PublicKeyTwitter'])
-        encrypted = encrypt_message(plaintext, h1_Publickey)
+        pub = assemble_publickey(h1_key['PublicKeyTwitter'])
+        encrypted = encrypt_message(plaintext, pub)
         # print(encrypted)
-        h1_Privatekey = assemblePrivateKeyElgamal(h1_key['PrivateKey'])
-        decrypted = decrypt_message(h1_Privatekey, encrypted,)
+        priv = assemble_privatekey(h1_key['PrivateKey'])
+        decrypted = decrypt_message(priv, encrypted, )
         # print(decrypted)
         assert plaintext == decrypted
 
 
-class test_messaging(TestCase):
-
+class test_Messaging(TestCase):
     def test_send_plain_statusupdate(self):
         if userkeys:
             message = 'test_send_statusupdate. Time:  ' + str(d.now())
             twitter = Twython(consumer_key, consumer_sec, access_tok, access_token_sec)
             send_status_update(twitter, message)
 
-    def test_read_plain_status(self):
+    def test_ReadPlainStatus(self):
         if userkeys:
             twitter = Twython(consumer_key, consumer_sec, access_tok, access_token_sec)
             user_timeline = twitter.get_user_timeline(screen_name='HeteroT1', count=1, exclude_replies=True)
             lastmessage = user_timeline[0]['text']
             assert lastmessage.split(':')[0] == 'test_send_statusupdate. Time'
 
-    def test_send_encrypted_statusupdate(self):
+    def test_SendEncryptedStatusupdate(self):
         if userkeys:
             plaintext = 'Hello Twitter world'
             # keys
-            h1_Publickey = assemblePublicKeyElgamal(h1_key['PublicKeyTwitter'])
-            h1_Privatekey = assemblePrivateKeyElgamal(h1_key['PrivateKey'])
-            encrypted = encrypt_message(plaintext, h1_Publickey)
+            pub = assemble_publickey(h1_key['PublicKeyTwitter'])
+            priv = assemble_privatekey(h1_key['PrivateKey'])
+            encrypted = encrypt_message(plaintext, pub)
             # Send
             twitter = Twython(consumer_key, consumer_sec, access_tok, access_token_sec)
             print(encrypted)
@@ -136,15 +133,12 @@ class test_messaging(TestCase):
             # read
             user_timeline = twitter.get_user_timeline(screen_name='HeteroT1', count=1, exclude_replies=True)
             lastmessage = user_timeline[0]['text']
-            decrypted = decrypt_message(h1_Privatekey, lastmessage,)
+            decrypted = decrypt_message(priv, lastmessage, )
             print(decrypted)
             assert plaintext == decrypted
 
 
-
-
-class test_elgamal(TestCase):
-
+class test_Elgamal(TestCase):
     def id_generator(self, size=6, chars=string.ascii_uppercase + string.digits):
         return ''.join(random.choice(chars) for _ in range(size))
 
@@ -162,25 +156,25 @@ class test_elgamal(TestCase):
             c += 1
 
     def test_roundtrip_stored_key(self):
-        Pub = PublicKey(h1_key['PublicKey'][0], h1_key['PublicKey'][1], h1_key['PublicKey'][2], h1_key['PublicKey'][3])
-        h1_Privatekey = assemblePrivateKeyElgamal(h1_key['PrivateKey'])
+        pub = PublicKey(h1_key['PublicKey'][0], h1_key['PublicKey'][1], h1_key['PublicKey'][2], h1_key['PublicKey'][3])
+        priv = assemble_privatekey(h1_key['PrivateKey'])
         c = 0
         while c < 100:
             # message = "My name is Ryan.  Here is some french text:  Maître Corbeau, sur un arbre perché.  Now some Chinese: 鋈 晛桼桾 枲柊氠 藶藽 歾炂盵 犈犆犅 壾, 軹軦軵 寁崏庲 摮 蟼襛 蝩覤 蜭蜸覟 駽髾髽 忷扴汥 "
             message = self.id_generator(500)
-            cipher = encrypt(Pub, message)
-            plain = decrypt(h1_Privatekey, cipher)
+            cipher = encrypt(pub, message)
+            plain = decrypt(priv, cipher)
             assert message == plain
             c += 1
 
     def test_roundtrip_stored_twitter_key(self):
-        h1_Publickey = assemblePublicKeyElgamal(h1_key['PublicKeyTwitter'])
-        h1_Privatekey = assemblePrivateKeyElgamal(h1_key['PrivateKey'])
+        pub = assemble_publickey(h1_key['PublicKeyTwitter'])
+        priv = assemble_privatekey(h1_key['PrivateKey'])
         c = 0
         while c < 100:
             # message = "My name is Ryan.  Here is some french text:  Maître Corbeau, sur un arbre perché.  Now some Chinese: 鋈 晛桼桾 枲柊氠 藶藽 歾炂盵 犈犆犅 壾, 軹軦軵 寁崏庲 摮 蟼襛 蝩覤 蜭蜸覟 駽髾髽 忷扴汥 "
             message = self.id_generator(500)
-            cipher = encrypt(h1_Publickey, message)
-            plain = decrypt(h1_Privatekey, cipher)
+            cipher = encrypt(pub, message)
+            plain = decrypt(priv, cipher)
             assert message == plain
             c += 1
