@@ -32,12 +32,16 @@ h2_key = dict(PrivateKey=(649208861949529872564122463128197982846418461001683008
 
 
 # This is private, you need to get your own twitter consumer_key, consumer_sec, access_token_sec
-config = configparser.ConfigParser()
-config.read('user_data.ini')
-consumer_key = config['HeteroT1']['consumer_key']
-consumer_sec = config['HeteroT1']['consumer_sec']
-access_tok = config['HeteroT1']['access_tok']
-access_token_sec = config['HeteroT1']['access_token_sec']
+try:
+    config = configparser.ConfigParser()
+    config.read('user_data.ini')
+    consumer_key = config['HeteroT1']['consumer_key']
+    consumer_sec = config['HeteroT1']['consumer_sec']
+    access_tok = config['HeteroT1']['access_tok']
+    access_token_sec = config['HeteroT1']['access_token_sec']
+    userkeys = True
+except:
+    userkeys = False
 
 
 class test_KeyTools(TestCase):
