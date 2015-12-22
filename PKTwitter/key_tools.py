@@ -61,6 +61,3 @@ def make_key_pair(iNumBits=256, iConfidence=32):
                            e['privateKey'].iNumBits)
     return ekeys
 
-
-
-

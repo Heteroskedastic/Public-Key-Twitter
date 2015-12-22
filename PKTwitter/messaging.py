@@ -44,6 +44,3 @@ def send_status_update(twitter, message="test " + str(d.now())):
     print("message sent ")
     print("message - ", message)
 
-# send_user_messages()
-
-# x = get_user_description(consumer_key, consumer_sec, access_tok, access_token_sec, 'heterot2')
