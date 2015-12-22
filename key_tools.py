@@ -1,6 +1,6 @@
 from functools import reduce
 import unicodedata as ud
-from elgamal import PrivateKey, generate_keys, PublicKey
+from elgamal2 import PrivateKey, generate_keys, PublicKey
 from twython import Twython
 
 

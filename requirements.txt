@@ -1,1 +1,2 @@
-twython==3.3.0
+# Public-Key-Twitter
+twython >= 3.3.0

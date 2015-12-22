@@ -6,7 +6,7 @@ from unittest import TestCase
 
 from twython import Twython
 
-from elgamal import PublicKey, encrypt, decrypt, generate_keys
+from elgamal2 import PublicKey, encrypt, decrypt, generate_keys
 from key_tools import key_compress, key_expand, get_public_key, assemblePublicKeyElgamal, assemblePrivateKeyElgamal, make_twitter_public
 from messaging import encrypt_message, decrypt_message
 from messaging import send_status_update

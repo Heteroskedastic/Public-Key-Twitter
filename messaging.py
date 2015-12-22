@@ -1,4 +1,4 @@
-from elgamal import encrypt, decrypt
+from elgamal2 import encrypt, decrypt
 from key_tools import key_compress, key_expand
 from twython import Twython, TwythonError
 from datetime import datetime as d
