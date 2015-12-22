@@ -99,6 +99,7 @@ class PublicKey(object):
 
 
 computes the greatest common denominator of a and b.  assumes a > b
+
 def gcd(a, b):
     if b != 0:
         return gcd(b, a % b)
