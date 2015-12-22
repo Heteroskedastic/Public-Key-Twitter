@@ -1,7 +1,7 @@
 import unicodedata as ud
 from functools import reduce
 
-from PKTwitter.elgamal2 import PrivateKey, generate_keys, PublicKey
+from pktwitter.elgamal2 import PrivateKey, generate_keys, PublicKey
 
 
 def alphabet():

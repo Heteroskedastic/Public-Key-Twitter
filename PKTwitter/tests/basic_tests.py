@@ -4,11 +4,11 @@ import string
 from datetime import datetime as d
 from unittest import TestCase
 
-from PKTwitter.messaging import encrypt_message, decrypt_message, send_status_update
+from pktwitter.messaging import encrypt_message, decrypt_message, send_status_update
 from twython import Twython
 
-from PKTwitter.elgamal2 import PublicKey, encrypt, decrypt, generate_keys
-from PKTwitter.key_tools import key_compress, key_expand, get_public_key, assemble_publickey, assemble_privatekey, make_twitter_public
+from pktwitter.elgamal2 import PublicKey, encrypt, decrypt, generate_keys
+from pktwitter.key_tools import key_compress, key_expand, get_public_key, assemble_publickey, assemble_privatekey, make_twitter_public
 
 h1_key = {'PrivateKey': (58504424099595153091358344215955475230050049863512430651997500754387780518083,
                          38614024321110971174729173348335841809565219369323123741355000936927396786103,
