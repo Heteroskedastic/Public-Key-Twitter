@@ -164,8 +164,10 @@ class test_Elgamal(TestCase):
             c += 1
 
     def test_roundtrip_stored_key(self):
-        pub = PublicKey(h1_key['PublicKey'][0], h1_key['PublicKey'][1], h1_key['PublicKey'][2], h1_key['PublicKey'][3])
-        priv = assemble_privatekey(h1_key['PrivateKey'])
+        puk = h1_keys['PublicKey']
+        pub = PublicKey(puk['p'], puk['g'], puk['h'], puk['iNumBits'])
+        prk = h1_keys['PrivateKey']
+        priv = assemble_privatekey((prk['p'], prk['g'], prk['x'], prk['iNumBits']))
         c = 0
         while c < 100:
             # message = "My name is Ryan.  Here is some french text:  Maître Corbeau, sur un arbre perché.  Now some Chinese: 鋈 晛桼桾 枲柊氠 藶藽 歾炂盵 犈犆犅 壾, 軹軦軵 寁崏庲 摮 蟼襛 蝩覤 蜭蜸覟 駽髾髽 忷扴汥 "
@@ -176,8 +178,9 @@ class test_Elgamal(TestCase):
             c += 1
 
     def test_roundtrip_stored_twitter_key(self):
-        pub = assemble_publickey(h1_key['PublicKeyTwitter'])
-        priv = assemble_privatekey(h1_key['PrivateKey'])
+        pub = assemble_publickey(h1_keys['PublicKeyTwitter'])
+        prk = h1_keys['PrivateKey']
+        priv = assemble_privatekey((prk['p'], prk['g'], prk['x'], prk['iNumBits']))
         c = 0
         while c < 100:
             # message = "My name is Ryan.  Here is some french text:  Maître Corbeau, sur un arbre perché.  Now some Chinese: 鋈 晛桼桾 枲柊氠 藶藽 歾炂盵 犈犆犅 壾, 軹軦軵 寁崏庲 摮 蟼襛 蝩覤 蜭蜸覟 駽髾髽 忷扴汥 "
