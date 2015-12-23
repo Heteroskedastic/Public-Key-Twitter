@@ -1,4 +1,4 @@
-import unicodedata.ucd_3_2_0 as ud
+from unicodedata import ucd_3_2_0 as ud
 from functools import reduce
 
 from pktwitter.elgamal2 import PrivateKey, generate_keys, PublicKey
