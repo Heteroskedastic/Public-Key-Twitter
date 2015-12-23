@@ -124,7 +124,7 @@ class test_Messaging(TestCase):
             twitter = Twython(consumer_key, consumer_sec, access_tok, access_token_sec)
             user_timeline = twitter.get_user_timeline(screen_name='HeteroT1', count=1, exclude_replies=True)
             lastmessage = user_timeline[0]['text']
-            assert lastmessage.split(':')[0] == 'test_send_statusupdate. Time'
+            assert lastmessage.split(':')[0] == 'test_send_statusupdate. Time', print(lastmessage)
 
     def test_SendEncryptedStatusupdate(self):
         if userkeys:
