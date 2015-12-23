@@ -133,7 +133,7 @@ class test_Messaging(TestCase):
             # read
             user_timeline = twitter.get_user_timeline(screen_name='HeteroT1', count=1, exclude_replies=True)
             lastmessage = user_timeline[0]['text']
-            decrypted = decrypt_message(priv, lastmessage, )
+            decrypted = decrypt_message(priv, lastmessage)
             print(decrypted)
             assert plaintext == decrypted
 

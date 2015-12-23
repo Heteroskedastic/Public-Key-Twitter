@@ -29,17 +29,13 @@ def get_user_messages(consumer_key, consumer_sec, access_tok, access_token_sec, 
         print("message - ", message)
 
 
-def send_direct_messages(consumer_key, consumer_sec, access_tok, access_token_sec, username='heteroT1',
-                         message="test " + str(d.now())):
-
-    twitter = Twython(consumer_key, consumer_sec, access_tok, access_token_sec)
+def send_direct_messages(twitter, username, message):
     message = twitter.send_direct_message(screen_name=username, text=message)
     print("message sent ")
-    print("message - ", message)
 
 
 def send_status_update(twitter, message="test " + str(d.now())):
-    # witter = Twython(consumer_key, consumer_sec, access_tok, access_token_sec)
+    # twitter = Twython(consumer_key, consumer_sec, access_tok, access_token_sec)
     twitter.update_status(status=message)
     print("message sent ")
     print("message - ", message)
