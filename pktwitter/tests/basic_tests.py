@@ -10,25 +10,27 @@ from twython import Twython
 from pktwitter.elgamal2 import PublicKey, encrypt, decrypt, generate_keys
 from pktwitter.key_tools import key_compress, key_expand, get_public_key, assemble_publickey, assemble_privatekey, make_twitter_public
 
-h1_key = {'PrivateKey': (58504424099595153091358344215955475230050049863512430651997500754387780518083,
-                         38614024321110971174729173348335841809565219369323123741355000936927396786103,
-                         39730116072721460806461502394040814760430228006424332182977094853608328496076,
-                         256), 'PublicKeyTwitter': '|TPK|ÅʎȾïκĦçǼǭŤԫɱųyxӏʗɄϲՖʊњșѴʝß|mύYǖûԼĻсĺǱǤҹҙΛŨȇǘĈэǹAԘԏȢѺó|rԝӄăȃǼąЏœϲӋӳʓевкЪЗԧúҾƇՍКϛӗ|ƍ',
-          'PublicKey': (58504424099595153091358344215955475230050049863512430651997500754387780518083,
-                        38614024321110971174729173348335841809565219369323123741355000936927396786103,
-                        43941852118365358120679198651859899509717714722706687951109846250988690628871,
-                        256
-                        )}
+# Bob
+h1_keys = {'PrivateKey': {'g': 24751437537389890194590657497357491645325854825567374144321182616248470389391,
+                          'p': 86171467944154384762405147922450425872423195171219400197372357783518331285503,
+                          'x': 85938432118568785220846806342156822575124367753119914968056518633737657379708,
+                          'iNumBits': 256},
+           'PublicKeyTwitter' : '|TPK|àĶʄքĥȔҚȪĞծɳɚԲɘŎĶŦȥŐȈǹүΒǞƨʨ|YҏɦΦșՄōϜЩʢǹʜНǘӹӚτȊěǔŁЀƃʇșț|DɺѝļΛǏΏǳίӬʎödȥӊΰŖęӀǖӜŊѥԿEϰ|Ƌ',
+           'PublicKey': {'g': 24751437537389890194590657497357491645325854825567374144321182616248470389391,
+                         'p': 86171467944154384762405147922450425872423195171219400197372357783518331285503,
+                         'h': 3457709177527316515351546843477108029400810547203142800323827191717885004610,
+                         'iNumBits': 256}}
+# Alice
+h2_keys = {'PrivateKey' : {'g': 36482904938826431026020554131207847903542016549871844870165534499814489562137,
+                           'p': 90875932096819552844785556612588613873835546274321893596879958899737144933243,
+                           'x': 7944233631008039187005070093408286827218413351278143022878301217995040934857,
+                           'iNumBits': 256},
+           'PublicKeyTwitter' : '|TPK|äԵոêӔεӭұιϲϚϳԳӤίƝǔՇϢԹႪՍѹěչž|kʓՒվӛɠaUηĎŚӰՑΫQβԱӭԏİΣʤӎʚοĔ|PĐWɽɣЎтѲҼմǖȒÄɱĠΆůąʇHАўœƝʜǑ|Ƌ',
+           'PublicKey' : {'g': 36482904938826431026020554131207847903542016549871844870165534499814489562137,
+                          'p': 90875932096819552844785556612588613873835546274321893596879958899737144933243,
+                          'h': 15133022460434630682730796928323382059448149509228122470007632710200274491318,
+                          'iNumBits': 256}}
 
-h2_key = dict(PrivateKey=(64920886194952987256412246312819798284641846100168300883020957925738043123223,
-                          40286097406928106390665231019035371289374310946194041291156901633994826301988,
-                          12451816743310384350839455290582814769468821404604129753069361124628871636399,
-                          256), PublicKeyTwitter='|TPK|ËԈӦŏԨՌƍȲƃǍңҎƩϨҾðĵƹӣUԭԍъrĈŬ|oƫíȬԐöȜЁŴTjȉƮȌǊԢŏpưĩӵϠՓҪƺՍ|MəҠяǊȖǴҷɝƯέҞѩɪҥȪσĎљÐǿĉϛӗϣȥ|ƍ',
-              PublicKey=(64920886194952987256412246312819798284641846100168300883020957925738043123223,
-                         40286097406928106390665231019035371289374310946194041291156901633994826301988,
-                         26411613147959710735752662179675054173684751574803940945905190516099282103410,
-                         256
-                         ))
 
 # This is private, you need to get your own twitter consumer_key, consumer_sec, access_token_sec
 try:
@@ -63,19 +65,21 @@ class test_KeyTools(TestCase):
             h1 = get_public_key(twitter, 'heterot1')
             h2 = get_public_key(twitter, 'heterot2')
             # print(h1, h2)
-            assert (h1 == h1_key['PublicKeyTwitter'])
-            assert (h2 == h2_key['PublicKeyTwitter'])
+            assert (h1 == h1_keys['PublicKeyTwitter'])
+            assert (h2 == h2_keys['PublicKeyTwitter'])
 
     def test_publickey_compress_expand(self):
-        orgkey = PublicKey(h1_key['PublicKey'][0], h1_key['PublicKey'][1], h1_key['PublicKey'][2], h1_key['PublicKey'][3])
-        twitkey = make_twitter_public(orgkey)
-        k = '|TPK|ÅʎȾïκĦçǼǭŤԫɱųyxӏʗɄϲՖʊњșѴʝß|mύYǖûԼĻсĺǱǤҹҙΛŨȇǘĈэǹAԘԏȢѺó|rԝӄăȃǼąЏœϲӋӳʓевкЪЗԧúҾƇՍКϛӗ|ƍ'
-        twitkeyback = assemble_publickey(twitkey)
-        assert k == twitkey
-        assert twitkeyback.p == orgkey.p
-        assert twitkeyback.g == orgkey.g
-        assert twitkeyback.h == orgkey.h
-        assert twitkeyback.iNumBits == orgkey.iNumBits
+        pk = h1_keys['PublicKey']
+        #PublicKey(p, g, h, iNumBits)
+        pub = PublicKey(pk['p'], pk['g'], pk['h'], pk['iNumBits'])
+        twit = make_twitter_public(pub)
+        k = '|TPK|àĶʄքĥȔҚȪĞծɳɚԲɘŎĶŦȥŐȈǹүΒǞƨʨ|YҏɦΦșՄōϜЩʢǹʜНǘӹӚτȊěǔŁЀƃʇșț|DɺѝļΛǏΏǳίӬʎödȥӊΰŖęӀǖӜŊѥԿEϰ|Ƌ'
+        pubfromtwit = assemble_publickey(twit)
+        assert k == twit
+        assert pubfromtwit.p == pub.p
+        assert pubfromtwit.g == pub.g
+        assert pubfromtwit.h == pub.h
+        assert pubfromtwit.iNumBits == pub.iNumBits
 
 
 class test_MessageEncryption(TestCase):
@@ -84,10 +88,12 @@ class test_MessageEncryption(TestCase):
         does not use message and key compression
         """
         plaintext = 'Hello Twitter world in 140 characters.'
-        pub = assemble_publickey(h1_key['PublicKeyTwitter'])
+        pub = assemble_publickey(h1_keys['PublicKeyTwitter'])
         encrypted = encrypt(pub, plaintext)
         # print(encrypted)
-        priv = assemble_privatekey(h1_key['PrivateKey'])
+        prk = h1_keys['PrivateKey']
+        #ints is a tuple if (p, g, x, iNumBits)
+        priv = assemble_privatekey((prk['p'], prk['g'], prk['x'], prk['iNumBits']))
         plaintext = decrypt(priv, encrypted)
         print(plaintext)
 
@@ -96,10 +102,11 @@ class test_MessageEncryption(TestCase):
         uses message and key compression
         """
         plaintext = 'Hello Twitter world in 140 characters.'
-        pub = assemble_publickey(h1_key['PublicKeyTwitter'])
+        pub = assemble_publickey(h1_keys['PublicKeyTwitter'])
         encrypted = encrypt_message(plaintext, pub)
         # print(encrypted)
-        priv = assemble_privatekey(h1_key['PrivateKey'])
+        prk = h1_keys['PrivateKey']
+        priv = assemble_privatekey((prk['p'], prk['g'], prk['x'], prk['iNumBits']))
         decrypted = decrypt_message(priv, encrypted, )
         # print(decrypted)
         assert plaintext == decrypted
@@ -123,8 +130,9 @@ class test_Messaging(TestCase):
         if userkeys:
             plaintext = 'Hello Twitter world'
             # keys
-            pub = assemble_publickey(h1_key['PublicKeyTwitter'])
-            priv = assemble_privatekey(h1_key['PrivateKey'])
+            pub = assemble_publickey(h1_keys['PublicKeyTwitter'])
+            prk = h1_keys['PrivateKey']
+            priv = assemble_privatekey((prk['p'], prk['g'], prk['x'], prk['iNumBits']))
             encrypted = encrypt_message(plaintext, pub)
             # Send
             twitter = Twython(consumer_key, consumer_sec, access_tok, access_token_sec)

@@ -56,8 +56,8 @@ def make_key_pair(iNumBits=256, iConfidence=32):
     # TODO add p and t options for generate key
     e = generate_keys()
     ekeys = dict()
-    ekeys['PublicKey'] = make_twitter_public(e['publicKey'])
-    ekeys['PrivateKey'] = (e['privateKey'].p, e['privateKey'].g, e['privateKey'].x,
-                           e['privateKey'].iNumBits)
+    ekeys['TwitterKey'] = make_twitter_public(e['publicKey'])
+    ekeys['PrivateKey'] = {'p': e['privateKey'].p, 'g': e['privateKey'].g, 'x': e['privateKey'].x, 'iNumBits': e['privateKey'].iNumBits}
+    ekeys['PublicKey'] = {'p': e['publicKey'].p, 'g': e['publicKey'].g, 'h': e['publicKey'].h, 'iNumBits': e['publicKey'].iNumBits}
     return ekeys
 
